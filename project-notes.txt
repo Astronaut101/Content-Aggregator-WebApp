@@ -1,0 +1,5 @@
+# Project TBC: Building the Podcast Model
+
+>> Assignments, further readings and code explorations with the mentioned project:
+    1. https://docs.djangoproject.com/en/3.1/ref/applications/#configuring-applications
+    2. https://en.wikipedia.org/wiki/Marshalling_(computer_science)
