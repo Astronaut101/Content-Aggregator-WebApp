@@ -1,5 +1,76 @@
-# Project TBC: Building the Podcast Model
+# Project TBC: Creating your Homepage View 
 
 >> Assignments, further readings and code explorations with the mentioned project:
     1. https://docs.djangoproject.com/en/3.1/ref/applications/#configuring-applications
     2. https://en.wikipedia.org/wiki/Marshalling_(computer_science)
+
+* Note in your settings.py file, you have named your django application to be verbose like 'podcasts.apps.PodcastsConfig'
+    -> This is to follow best practices when building a much larger Django Application to use the full AppConfig name, 
+    but it should work fine in small applications.
+
+    >>> from django.apps import apps
+    >>> apps.get_app_config('admin').verbose_name
+    'Administration'
+    >>> apps.get_app_config('podcasts').verbose_name
+    'Podcasts'
+
+* Applications (Django Docs)
+    -> Projects and applications
+        > Project: describes a Django Web Application
+        > Application: Descibes a Python package that provides some set of features. Applications may be reused in various projects
+        > There's no such thing as an Application object, although there's a few places where Django needs to ineract with 
+        installed applications, mainly for configuration and also for introspection.
+        > This is why the application registry maintains metada in an AppConfig instance for each installed application
+    -> Configuring Applications
+        > New applications should avoid default_app_config. Django users should require the dotted path to the appropriate AppConfig
+        subclass to be configured explicitly in INSTALLED_APPS.
+    -> For application authors
+    -> Configurable Attributes
+        * AppConfig.name
+        * AppConfig.label
+        * AppConfig.verbose_name
+        * AppConfig.path
+    -> Read-only attributes
+        * AppConfig.module
+        * AppConfig.models_module
+    -> Methods
+        * AppConfig.get_models()
+        * AppConfig.get_model(model_name, require_ready=True)
+            * raises LookupError if no such model exists in the application.
+            * Returns the model with the given model_name, which is case insensitive
+        * AppConfig.ready()
+
+* Building Your Podcast Model
+    * Always ask this question, "As a user, what would I like to do?" and answer the question over and onver until you've exhausted 
+    all your ideas.
+    * Then you can ask yourself what's missing by thinking about what you'd like as a developer.
+    * Good tactic for writing database models by being able to identify your users needs and their respective tastes 
+    in order to prevent from adding extra fields later and running unneccessary migrations.
+    
+    * REMEMBER: List your project's requirements from a user's perspective as well as a developer's perspective:
+    * As a user, I would like to:
+
+        - Know the title of an episode
+        - Read a description of the episode
+        - Know when an episode was published
+        - Have a clickable URL so I can listen to the episode
+        - See an image of the podcast so I can scroll to look for my favourite podcasts
+        - See the podcast name
+        # Requirements below is outside the scope of the Podcast Model Database that we would 
+        be building
+        - Being able to search for the title and for the date when that podcasts is being published.
+        - Possible a feature add-on to our Digital Resume web app
+        - <Add more below if you think of the other possible things to add in your podcasts web app>
+
+    * As a developer, I would like to: 
+
+        - Have a uniquely identifiable attribute for each episode so I can avoid duplicating episodes in the database
+
+    * One of the most powerful features of Django is to be able to store / interact with your data not only 
+    on the database side, but also on your admin area too.
+
+    * One of the new features in Django 3.2 is that you could predefine your type of primary key 
+    automatically. The new default is the BigAutoField as opposed to the Integer default in 
+    previous versions of Django.
+
+    * IMPORTANT: Doing Unit Tests in your Django Models

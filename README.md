@@ -2,10 +2,9 @@
 
 * Building a Content Aggregator with the Django Web Framework 🚲
 
-* Inspiration behind the project:
-    This is to gather all of the contents and important information from your favourite subjects into one single place.
+* Inspiration behind the project: This is to gather all of the contents and important information from your favourite subjects into one single place.
 
-    The Content Aggregator Webapp would source all of the RSS feeds from all of the Podcasts Episodes of Real Python.
+* The Content Aggregator Webapp would source all of the RSS feeds from all of the Podcasts Episodes of Real Python.
 
 * Kudos to @RealPython for the amazing tutorials and lessons that they have shared on their wonderful website <https://realpython.com/> 🥰
 
@@ -17,8 +16,9 @@
 
 ## What does it look like?
 
-The content aggregator Web App is a Podcast Content Aggregator in Python named *pyCasts!*
-    * The application will be a single web page displaying the latest Python podcast episodes from the **Real Python Podcast <https://realpython.com/podcasts/rpp/>** and the **Talk Python To Me Podcast <https://talkpython.fm/>**
+* The content aggregator Web App is a Podcast Content Aggregator in Python named *pyCasts!*
+
+* The application will be a single web page displaying the latest Python podcast episodes from the **Real Python Podcast <https://realpython.com/podcasts/rpp/>** and the **Talk Python To Me Podcast <https://talkpython.fm/>**
 
     ⚠**Actual working website is still on progress**⚠
 
@@ -54,13 +54,11 @@ The content aggregator Web App is a Podcast Content Aggregator in Python named *
 
 ## Steps done in setting-up the Django project
 
-"""
-(.venv) C:\Users\Clarence Vinzcent\Content-Aggregator-WebApp>python manage.py check
-System check identified no issues (0 silenced).
+    (.venv) C:\Users\Clarence Vinzcent\Content-Aggregator-WebApp>python manage.py check
+    System check identified no issues (0 silenced).
 
-(.venv) C:\Users\Clarence Vinzcent\Content-Aggregator-WebApp>python manage.py startapp podcasts
+    (.venv) C:\Users\Clarence Vinzcent\Content-Aggregator-WebApp>python manage.py startapp podcasts
 
-(.venv) C:\Users\Clarence Vinzcent\Content-Aggregator-WebApp>py manage.py makemigrations && py manage.py migrate
+    (.venv) C:\Users\Clarence Vinzcent\Content-Aggregator-WebApp>py manage.py makemigrations && py manage.py migrate
 
-(.venv) C:\Users\Clarence Vinzcent\Content-Aggregator-WebApp>py manage.py createsuperuser
-"""
+    (.venv) C:\Users\Clarence Vinzcent\Content-Aggregator-WebApp>py manage.py createsuperuser
