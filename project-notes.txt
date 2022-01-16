@@ -40,7 +40,7 @@
             * Returns the model with the given model_name, which is case insensitive
         * AppConfig.ready()
 
-* Building Your Podcast Model
+##2: Building Your Podcast Model
     * Always ask this question, "As a user, what would I like to do?" and answer the question over and onver until you've exhausted 
     all your ideas.
     * Then you can ask yourself what's missing by thinking about what you'd like as a developer.
@@ -74,3 +74,230 @@
     previous versions of Django.
 
     * IMPORTANT: Doing Unit Tests in your Django Models
+
+##3: Creating your Homepage View
+
+    * Not only function-based views, but also class-based views
+    * Reading assignment: 
+        1. https://docs.djangoproject.com/en/3.2/topics/class-based-views/ [DONE]
+        2. https://docs.djangoproject.com/en/3.2/ref/class-based-views/ [DONE]
+        3. https://docs.djangoproject.com/en/3.2/topics/class-based-views/generic-display/
+        4. https://docs.djangoproject.com/en/3.2/topics/class-based-views/generic-editing/
+        5. https://docs.djangoproject.com/en/3.2/topics/class-based-views/mixins/
+
+    * In addition to testing that the homepage renders episodes correctly, it's good practice to 
+    test both that the correct template is being used and that navigating to its URL returns a valid
+    HTTP status code.
+
+    * Using class-based views
+
+    -> Using the view function in order to handle HTTP GET requests:
+    """
+    from django.http import HttpResponse
+
+    def my_view(request):
+        if request.method == 'GET':
+            # <view logic>
+            return HttpResponse('result')
+    """
+
+    -> In a class-based view, this would look like:
+    """
+    from django.http import HttpResponse
+    from django.views import View
+
+    class MyView(View):
+        def get(self, request):
+            # <view logic>
+            return HttpResponse('result')
+    """
+
+    -> Two ways in configuring or setting class attributes.
+    """
+    from django.http import HttpResponse
+    from django.views import View
+
+    class GreetingView(View):
+        greeting = "Good Day"
+
+        def get(self, request):
+            return HttpResponse(self.greeting)
+    """
+    
+    -> You can override that in a subclass:
+    """
+    class MorningGreetingView(GreetingView):
+        greeting = "Morning to ya"
+    """
+
+    -> Another option is to configure class attributes as keyword arguments to the as_view() call in the URLconf:
+    """
+    urlpatterns = [
+        path('about/', GreetingView.as_view(greeting="G'day")),
+    ]
+    """
+
+    * Handling forms with class-based views
+    -> Function-based view that handles forms may look something like this:
+    """
+    from django.http import HttpResponseRedirect
+    from django.shortcuts import render
+
+    from .forms import MyForm
+
+    def myview(request):
+        if request.method == "POST":
+            form = MyForm(request.POST)
+            if form.is_valid():
+                # <process form cleaned data>
+                return HttpResponseRedirect("/success/")
+        else:
+            form = MyForm(initial={'key': 'value'})
+        
+        return render(request, 'form_template.htm', {'form': form})
+    """
+
+    -> Class-based view implementation
+    """
+    from django.http import HttpResponseRedirect
+    from django.shortcuts import render
+    from django.views import View
+
+    from .forms import MyForm
+
+    class MyFormView(View):
+        form_class = MyForm
+        initial = {'key': 'value'}
+        template_name = 'form_template.htm'
+
+        def get(self, request, *args, **kwargs):
+            form = self.form_class(initial=self.initial)
+            return render(request, self.template_name, {'form': form})
+
+        def post(self, request, *args, **kwargs):
+            form = self.form_class(request.POST)
+            if form.is_valid():
+                # <process form cleaned data>
+                return HttpResponseRedirect('/success/')
+
+            return render(request, self.template_name, {'form': form})
+        """
+
+        * Decorating in URLconf
+        -> The approach mentioned below applies the decorator on a per-instance basis.
+        """
+        from django.contrib.auth.decorators import login_required, permission required
+        from django.views.generic import TemplateView
+
+        from .views import VoteView
+
+        urlpatterns = [
+            path('about/',
+            login_required(TemplateView.as_view(template_name="secret.htm"))),
+            path('vote/', 
+            permission_required('polls.can_vote')(VoteView.as_view())),
+        ]
+        """
+
+        -> To decorate every instance of a class-based view, you need to decorate the class definition
+        itself. To do this you will apply the decorator to the dispatch() method of the class
+        -> NOTE: You need to transform your decorator first into a method decorator
+        """
+        from django.contrib.auth.decorators import login_required
+        from django.utils.decorators import method_decorator
+        from django.views.generic import TemplateView
+
+        class ProtectedView(TemplateView):
+            template_name = "secret.htm"
+
+            @method_decorator(login_required)
+            def dispath(self, *args, **kwargs):
+                return super().dispatch(*args, **kwargs)
+        """
+
+        -> OR MORE SUCCINTLY, decorating the class instead and passing the name of the method to be decorated, 
+        as the keyword argument name:
+        """
+        @method_decorator(login_required, name="dispatch")
+        class ProtectedView(TemplateView):
+            template_name = 'secret.htm'
+        """
+
+        -> If you have a set of common decorators used in several places, you can define a list of 
+        tuple or decorators and use this instaead of invoking method_decorator() multiple times
+        """
+        decorators = [never_cache, login_required]
+
+        @method_decorator(decorators, name="dispatch")
+        class ProtectedView(TemplateView):
+            template_name = 'secret.htm'
+
+        @method_decorator(never_cache, name="dispatch")
+        @method_decorator(login_required, name="dispatch")
+        class ProtectedView(TemplateView):
+            template_name = 'secret.htm'
+
+##4: Parsing Podcast Feeds
+
+    * All podcasts has an RSS Feed
+    * Podcast RSS Feeds need to all look alike. What this means is that it must adhere to the RSS 2.0 specifications. <https://cyber.harvard.edu/rss/rss.html>
+    * Two benefits from these RSS standard specs
+        1. All feeds will have the same attributes, so you can reuse code to pull the same
+        data for any given podcast, making your code easier to maintain and more DRY.
+        2. Each episode must have a guid (uuid4) assigned to it, which makes each episode in that feed 
+        unique.
+
+    * First Podcast feed that we are going to parse is the Real Python Podcast feed. <https://realpython.com/podcasts/rpp/feed>
+    * Python library feedparser
+
+    >>> import feedparser
+    >>> feed = feedparser.parse("<your rss url feed>")
+
+    * You can access feed tags, such as the podcast title, with standard dot notation:
+
+    >>> podcast_title = feed.channel.title
+    >>> podcast_title
+
+    * You can also access attributes within a tag by using bracket notation:
+
+    >>> podcast_image = feed.channel.image["href"]
+    >>> podcast_image
+
+    * You can also check the guid of each podcast episode on the feed and check to see whether 
+    it exists in your database.
+    * Special attribute called .entries
+    * Using the custom command to run our parsing RSS feed function.
+
+##5: Creating a Django Custom Command
+
+    * In our previous step, we have no sensible way yet of running code that interacts
+    with the Django ORM.
+    * Custom commands utilize the manage.py file to run your code. 
+    * First create a 'management/commands/' for the Django to register any module as 
+    a usable command.
+    * Custom management commands deep dive : <https://docs.djangoproject.com/en/3.1/howto/custom-management-commands/>
+    * Every command must have a Command Class
+        * It needs .handle() method, which you can think of as the main method of your class
+        * The .handle() method holds the code that you want to execute.
+
+##6: Adding Additional Feeds to Your Python Content Aggregator
+
+##7: Scheduling Tasks with django-apscheduler
+
+    * Setting-up djnago-apscheduler
+    * Add a schedule for the custom command
+    * Add task logging to your application
+    * Get the change to see your scheduled jobs in the Django Admin
+    
+    NOTE: There’s no need to run makemigrations first, as the django-apscheduler package includes its own migration files.
+
+    * We have a total of three jobs for our application:
+        1. One for each podcast feed you wish to parse
+        2. Third for deleting old jobs from the database (NOTE: It is good practice to clean old history from the database)
+    * All of the aforementioned tasks will be done on a schedule
+
+    * NOTE: Setup a logging configuration eventhough job history will be stored in the database
+
+    * NOTE: Extend the interval wherein the cronjob is being executed (for testing - 2min, for production - 1 week (128hrs/604,800sec)) 
+
+    * add in the calls to scheduler.start() and scheduler.shutdown().
