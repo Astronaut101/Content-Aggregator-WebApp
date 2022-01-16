@@ -301,3 +301,23 @@
     * NOTE: Extend the interval wherein the cronjob is being executed (for testing - 2min, for production - 1 week (128hrs/604,800sec)) 
 
     * add in the calls to scheduler.start() and scheduler.shutdown().
+
+##8 Possible Additions to the Django Web Content-Aggregator Application
+
+    -> Add more feeds! Interested in data science? Check out The Ultimate List of Data Science Podcasts.
+    
+    -> Change the type of content. If podcasts aren’t your thing, maybe football news is? Or maybe you like to listen to finance podcasts instead? 
+    Whatever your interest, use this project as a stepping stone to create an aggregator for one of your passions.
+    
+    -> Add user accounts so that users can subscribe to the feeds that interest them. Then at the end of the day, send them an email with the new content from their subscriptions. 
+    Check out the tutorial on Django view authorization for help with this.
+    
+    -> Add an is_published Boolean flag to the Episode model so that admins can manually curate and confirm the episodes shown on the homepage.
+    
+    -> Add a featured field to the Episode model so that you can highlight selected podcasts on the homepage.
+    
+    -> Restyle the app to make it your own. Customize the CSS or rip out Bootstrap 4 in favor of Tailwind CSS. The world’s your oyster.
+    
+    -> Deploy the app to a production environment—for example, by hosting your Django app on Heroku.
+    
+    -> Customize the Django admin and supercharge your Django admin experience.
